@@ -18,7 +18,7 @@ public class Database {
 
     private void init() {
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:mysql://localhost:3306/test?useSSL=false");
+        hikariConfig.setJdbcUrl("jdbc:mysql://localhost:3306/test?useSSL=false&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION'&jdbcCompliantTruncation=false");
         hikariConfig.setUsername("root");
         hikariConfig.setPassword("");
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
@@ -36,10 +36,8 @@ public class Database {
 
     public Connection getConnection() throws SQLException {
         if (hikariDataSource == null) {
-            System.out.println("not connected");
             return null;
         }
-        System.out.println("connected");
         return hikariDataSource.getConnection();
     }
 

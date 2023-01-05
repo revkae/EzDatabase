@@ -4,8 +4,16 @@ public class Main {
     public static void main(String[] args) {
         Database database = new Database();
         Table table = new Table("test", true,
-                new Column("first", DataType.VARCHAR, 100),
-                new Column("second", DataType.VARCHAR, 100)
+                Column.with("first", DataType.VARCHAR, 1000),
+                Column.with("second", DataType.VARCHAR, 1000)
+        );
+        table.insert(
+                DataValue.with("first", "hey"),
+                DataValue.with("second", "yoo")
+        );
+
+        table.delete(
+                DataValue.with("first", "hey")
         );
     }
 }
