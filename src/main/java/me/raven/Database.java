@@ -34,11 +34,16 @@ public class Database {
         hikariDataSource = new HikariDataSource(hikariConfig);
     }
 
-    public Connection getConnection() throws SQLException {
-        if (hikariDataSource == null) {
-            return null;
+    public Connection getConnection() {
+        try {
+            if (hikariDataSource == null) {
+                return null;
+            }
+            return hikariDataSource.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return hikariDataSource.getConnection();
+        return null;
     }
 
     public static Database get() {

@@ -3,17 +3,14 @@ package me.raven;
 public class Main {
     public static void main(String[] args) {
         Database database = new Database();
-        Table table = new Table("test", true,
+        Table table = new Table("test",
+                Column.with("id", DataType.VARCHAR, 100, true),
                 Column.with("first", DataType.VARCHAR, 1000),
                 Column.with("second", DataType.VARCHAR, 1000)
         );
-        table.insert(
-                DataValue.with("first", "hey"),
-                DataValue.with("second", "yoo")
-        );
 
-        table.delete(
-                DataValue.with("first", "hey")
-        );
+        for (DataValue second : table.getColumn("second")) {
+            System.out.println(second.value);
+        }
     }
 }
