@@ -132,6 +132,12 @@ public class Table {
         }
     }
 
+    public void insert(Row... rows) {
+        for (Row row : rows) {
+            insert(row);
+        }
+    }
+
     public void delete(DataValue... where) {
         StringJoiner whereValues = new StringJoiner(" AND ");
         for (DataValue dataValue : where) {
