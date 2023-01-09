@@ -2,10 +2,10 @@ package me.raven;
 
 public class Column {
 
-    public String name;
-    public DataType type;
-    public int length;
-    public boolean isPrimary;
+    public final String name;
+    public final DataType type;
+    public final int length;
+    public final boolean isPrimary;
 
     public Column(String name, DataType type, int length) {
         this.name = name;

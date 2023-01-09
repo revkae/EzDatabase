@@ -2,6 +2,7 @@ package me.raven;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +101,7 @@ public class Table {
         StringJoiner names = new StringJoiner(",");
         StringJoiner values = new StringJoiner(",");
 
-        for (DataValue value : row.getRow()) {
+        for (DataValue value : row.getDataValues()) {
             names.add(value.name);
             values.add("?");
         }
@@ -113,7 +114,7 @@ public class Table {
                         + "(" + values + ")")) {
 
             int num = 1;
-            for (DataValue value : row.getRow()) {
+            for (DataValue value : row.getDataValues()) {
                 if (value.value instanceof String)
                     statement.setString(num, (String) value.value);
                 else if (value.value instanceof Integer)
@@ -131,9 +132,9 @@ public class Table {
         }
     }
 
-    public void delete(DataValue... dataValues) {
+    public void delete(DataValue... where) {
         StringJoiner whereValues = new StringJoiner(" AND ");
-        for (DataValue dataValue : dataValues) {
+        for (DataValue dataValue : where) {
             whereValues.add(dataValue.name + " = '" + dataValue.value + "'");
         }
 
@@ -151,7 +152,7 @@ public class Table {
 
     public void delete(Row row) {
         StringJoiner whereValues = new StringJoiner(" AND ");
-        for (DataValue dataValue : row.getRow()) {
+        for (DataValue dataValue : row.getDataValues()) {
             whereValues.add(dataValue.name + " = '" + dataValue.value + "'");
         }
 
@@ -162,6 +163,28 @@ public class Table {
                         + whereValues)) {
 
             preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void get(String name, DataValue... whereValues) {
+        StringJoiner wheres = new StringJoiner(" AND ");
+        for (DataValue whereValue : whereValues) {
+            wheres.add(whereValue.name + " = '" + whereValue.value + "'");
+        }
+
+        try (PreparedStatement statement = Database.get().getConnection().prepareStatement(
+                "SELECT " +
+                        name +
+                        " FROM " +
+                        tableName +
+                        " WHERE " +
+                        wheres
+        ); ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString(name));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -191,9 +214,30 @@ public class Table {
                         " FROM " +
                         tableName
         ); ResultSet resultSet = statement.executeQuery()) {
-
             while (resultSet.next()) {
                 output.add(DataValue.with(name, resultSet.getString(name)));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return output;
+    }
+
+    public List<DataValue> getColumns() {
+        List<DataValue> output = new ArrayList<>();
+
+        try (PreparedStatement statement = Database.get().getConnection().prepareStatement(
+                "SELECT " +
+                        "*" +
+                        " FROM " +
+                        tableName
+        ); ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
+
+                for (int i = 0; i < metaData.getColumnCount(); i++) {
+                    output.add(DataValue.with(metaData.getColumnName(i), resultSet.getObject(i)));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

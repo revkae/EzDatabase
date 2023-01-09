@@ -2,6 +2,7 @@ package me.raven;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Row {
 
@@ -11,7 +12,7 @@ public class Row {
         this.row = Arrays.stream(dataValues).toList();
     }
 
-    public void updateDataValue(DataValue dataValue) {
+    public void update(DataValue dataValue) {
         for (DataValue value : row) {
             if (!value.name.equalsIgnoreCase(dataValue.name)) continue;
 
@@ -19,7 +20,7 @@ public class Row {
         }
     }
 
-    public DataValue getDataValue(String name) {
+    public DataValue get(String name) {
         for (DataValue dataValue : row) {
             if (!dataValue.name.equalsIgnoreCase(name)) continue;
 
@@ -28,7 +29,7 @@ public class Row {
         return null;
     }
 
-    public List<DataValue> getRow() {
+    public List<DataValue> getDataValues() {
         return row;
     }
 
