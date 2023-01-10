@@ -11,11 +11,9 @@ import java.util.StringJoiner;
 public class Table {
 
     private String tableName;
-    private List<Column> columns;
 
     public Table(String tableName, Column... columns) {
         this.tableName = tableName;
-        this.columns = List.of(columns);
 
         StringJoiner statementArgs = new StringJoiner(",");
         for (Column column : columns) {
@@ -43,7 +41,7 @@ public class Table {
             sets.add(dataValue.name + " = '" + dataValue.value + "'");
         }
 
-        StringJoiner wheres = new StringJoiner(",");
+        StringJoiner wheres = new StringJoiner(" AND ");
         for (DataValue whereValue : whereValues) {
             wheres.add(whereValue.name + " = '" + whereValue.value + "'");
         }
@@ -174,7 +172,13 @@ public class Table {
         }
     }
 
-    public void get(String name, DataValue... whereValues) {
+    public void delete(Row... rows) {
+        for (Row row : rows) {
+            delete(row);
+        }
+    }
+
+    public void getColumn(String name, DataValue... whereValues) {
         StringJoiner wheres = new StringJoiner(" AND ");
         for (DataValue whereValue : whereValues) {
             wheres.add(whereValue.name + " = '" + whereValue.value + "'");
@@ -195,22 +199,6 @@ public class Table {
             e.printStackTrace();
         }
     }
-
-    public void get(String name) {
-        try (PreparedStatement statement = Database.get().getConnection().prepareStatement(
-                "SELECT " +
-                        name +
-                        " FROM " +
-                        tableName
-        ); ResultSet resultSet = statement.executeQuery()) {
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString(name));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<DataValue> getColumn(String name) {
         List<DataValue> output = new ArrayList<>();
 
